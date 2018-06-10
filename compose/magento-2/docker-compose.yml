@@ -6,11 +6,8 @@ version: "3"
 services:
   app:
     image: markoshust/magento-nginx:1.13-3
-    ports:
-      - 80:8000
-    links:
-      - db
-      - phpfpm
+    networks:
+      - magento
     volumes: &appvolumes
       - ./src:/var/www/html:delegated
       - ~/.composer:/var/www/html/var/composer_home:delegated
@@ -18,24 +15,24 @@ services:
       - sockdata:/sock
 
   phpfpm:
-    image: markoshust/magento-php:7.1-fpm-2
-    links:
-      - db
+    image: markoshust/magento-php:7.0-fpm-2
+    networks:
+      - magento
     volumes: *appvolumes
 
   cron:
-    image: markoshust/magento-php:7.1-fpm-2
+    image: markoshust/magento-php:7.0-fpm-2
     user: root
     command: /usr/local/bin/cronstart
     tty: true
-    links:
-      - db
+    networks:
+      - magento
     volumes: *appvolumes
 
   db:
     image: percona:5.7
-    ports:
-      - 3306:3306
+    networks:
+      - magento
     env_file: env/db.env
     volumes:
       - dbdata:/var/lib/mysql
@@ -43,3 +40,7 @@ services:
 volumes:
   dbdata:
   sockdata:
+
+networks:
+  magento:
+    driver: overlay
