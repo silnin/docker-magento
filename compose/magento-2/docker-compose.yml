@@ -15,7 +15,7 @@ services:
       - sockdata:/sock
 
   phpfpm:
-    image: markoshust/magento-php:7.0-fpm-2
+    image: 999games/magento-php:7.0-fpm-2
     networks:
       - magento
     volumes: *appvolumes
