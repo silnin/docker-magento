@@ -9,36 +9,36 @@ services:
     networks:
       - magento
     volumes: &appvolumes
-      - ./src:/var/www/html:delegated
-      - ~/.composer:/var/www/html/var/composer_home:delegated
-      - ~/.composer:/var/www/.composer:delegated
+      - /var/www/html:/var/www/html:delegated
+      - /var/www/composer:/var/www/html/var/composer_home:delegated
+      - /var/www/composer:/var/www/.composer:delegated
       - sockdata:/sock
+    deploy:
+      replicas: 1
+    ports:
+      - 80:80
+      - 443:443
 
   phpfpm:
     image: 999games/magento-php:7.0-fpm-2
     networks:
       - magento
     volumes: *appvolumes
+    deploy:
+      replicas: 1
 
   cron:
-    image: markoshust/magento-php:7.0-fpm-2
+    image: 999games/magento-php:7.0-fpm-2
     user: root
     command: /usr/local/bin/cronstart
     tty: true
     networks:
       - magento
     volumes: *appvolumes
-
-  db:
-    image: percona:5.7
-    networks:
-      - magento
-    env_file: env/db.env
-    volumes:
-      - dbdata:/var/lib/mysql
+    deploy:
+      replicas: 1
 
 volumes:
-  dbdata:
   sockdata:
 
 networks:
